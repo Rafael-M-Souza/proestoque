@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { View, TextInput, Text, Pressable, StyleSheet, TextInputProps } from "react-native";
+import { View, TextInput, Text, TouchableOpacity, StyleSheet, TextInputProps } from "react-native"; // Troquei Pressable por TouchableOpacity
 import { Ionicons } from "@expo/vector-icons";
-import { Colors, Typography, Spacing, Radius } from "@/src/constants/theme";
+import { Colors, Typography, Spacing, Radius } from "../constants/theme"; // Ajustado para caminho relativo se necessário
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -56,13 +56,17 @@ export default function Input({
 
         {/* Botão de mostrar/ocultar senha */}
         {isPassword && (
-          <Pressable onPress={() => setShowPassword((v) => !v)} style={styles.rightIcon}>
+          <TouchableOpacity 
+            onPress={() => setShowPassword((v) => !v)} 
+            style={styles.rightIcon}
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} 
+          >
             <Ionicons
               name={showPassword ? "eye-off-outline" : "eye-outline"}
               size={18}
               color={Colors.neutral[400]}
             />
-          </Pressable>
+          </TouchableOpacity>
         )}
       </View>
 
@@ -76,8 +80,10 @@ export default function Input({
 const styles = StyleSheet.create({
   wrapper: { marginBottom: Spacing[4] },
   label: {
-    fontSize: Typography.fontSize.sm, fontWeight: Typography.fontWeight.semibold,
-    color: Colors.neutral[700], marginBottom: Spacing[1],
+    fontSize: Typography.fontSize.sm, 
+    fontWeight: Typography.fontWeight.semibold as any, // Cast para evitar erro de tipo no TS
+    color: Colors.neutral[700], 
+    marginBottom: Spacing[1],
   },
   inputContainer: {
     flexDirection: "row", alignItems: "center",
@@ -88,11 +94,13 @@ const styles = StyleSheet.create({
   focused:     { borderColor: Colors.primary[600] },
   errorBorder: { borderColor: Colors.danger.border },
   input: {
-    flex: 1, paddingVertical: Spacing[3],
-    fontSize: Typography.fontSize.md, color: Colors.textPrimary,
+    flex: 1, 
+    paddingVertical: Spacing[3],
+    fontSize: Typography.fontSize.md, 
+    color: Colors.textPrimary,
   },
   leftIcon:  { marginRight: Spacing[2] },
-  rightIcon: { padding: Spacing[1] },
+  rightIcon: { marginLeft: Spacing[1] }, // Um leve espaço do texto
   errorText: { marginTop: Spacing[1], fontSize: Typography.fontSize.sm, color: Colors.danger.text },
   hintText:  { marginTop: Spacing[1], fontSize: Typography.fontSize.sm, color: Colors.textSecondary },
 });

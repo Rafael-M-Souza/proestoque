@@ -1,5 +1,6 @@
-import { Pressable, Text, ActivityIndicator, StyleSheet, ViewStyle } from "react-native";
-import { Colors, Typography, Spacing, Radius } from "@/src/constants/theme";
+import React from "react";
+import { Pressable, Text, ActivityIndicator, StyleSheet, ViewStyle, TextStyle } from "react-native";
+import { Colors, Typography, Spacing, Radius } from "../constants/theme"; 
 
 // Definindo os tipos aceitos pelo componente (TypeScript)
 type ButtonVariant = "primary" | "outline" | "ghost" | "danger";
@@ -34,8 +35,8 @@ export default function Button({
       disabled={isDisabled}
       style={({ pressed }) => [
         styles.base,
-        styles[variant],      // Aplica o estilo da variante
-        styles[`size_${size}`], // Aplica o tamanho
+        styles[variant],      
+        styles[`size_${size}`], 
         fullWidth && styles.fullWidth,
         pressed && !isDisabled && styles.pressed,
         isDisabled && styles.disabled,
@@ -49,7 +50,8 @@ export default function Button({
       ) : (
         <>
           {icon && icon}
-          <Text style={[styles.label, styles[`label_${variant}`], styles[`labelSize_${size}`]]}>
+          <Text style={[styles.labelBase, styles[`label_${variant}`], 
+            styles[`labelSize_${size}`]]}>
             {label}
           </Text>
         </>
@@ -68,6 +70,7 @@ const styles = StyleSheet.create({
   outline:  { backgroundColor: "transparent", borderColor: Colors.primary[600] },
   ghost:    { backgroundColor: "transparent", borderColor: "transparent" },
   danger:   { backgroundColor: Colors.danger.bg, borderColor: Colors.danger.border },
+  
   // Tamanhos
   size_sm:  { paddingVertical: Spacing[2], paddingHorizontal: Spacing[3] },
   size_md:  { paddingVertical: Spacing[3], paddingHorizontal: Spacing[5] },
@@ -77,7 +80,7 @@ const styles = StyleSheet.create({
   pressed:    { opacity: 0.85, transform: [{ scale: 0.98 }] },
   disabled:   { opacity: 0.45 },
   // Labels
-  label:         { fontWeight: Typography.fontWeight.semibold },
+  labelBase:     { fontWeight: Typography.fontWeight.semibold },
   label_primary: { color: Colors.white },
   label_outline: { color: Colors.primary[600] },
   label_ghost:   { color: Colors.primary[600] },

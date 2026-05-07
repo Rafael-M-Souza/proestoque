@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, AntDesign } from '@expo/vector-icons';
 import { Colors } from '../../src/constants/theme';
 
 export default function TabLayout() {
@@ -15,8 +15,19 @@ export default function TabLayout() {
         name="index" // Home
         options={{
           title: 'Home',
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
+          ),
+        }}
+      />     
+      <Tabs.Screen
+        name="produtos" // Produtos
+        options={{
+          title: 'Produtos',
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <AntDesign name="folder" size={size} color={color} />
           ),
         }}
       />
@@ -24,6 +35,7 @@ export default function TabLayout() {
         name="configuracoes" // Configurações
         options={{
           title: 'Config',
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings-sharp" size={size} color={color} />
           ),

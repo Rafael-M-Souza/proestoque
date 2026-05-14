@@ -1,107 +1,76 @@
-import { 
-  View, Text, StyleSheet, SafeAreaView, 
-  KeyboardAvoidingView, Platform, TouchableOpacity, 
-  TouchableWithoutFeedback, Keyboard 
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { Colors, Typography, Spacing } from '../../src/constants/theme';
-import Input from '../../src/components/Input';
-import Button from '../../src/components/Button';
-import LogoProEstoque from '../../src/components/LogoProEstoque';
+import { useState } from "react";
+import { View, Text, Alert, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import { useAuth } from "@/src/contexts/AuthContext";
+import Input from "@/src/components/Input";
+import Button from "@/src/components/Button";
+import { Colors, Spacing } from "@/src/constants/theme";
 
 export default function Login() {
-  const router = useRouter();
+  const { login, isLoading } = useAuth(); // ← hook do contexto
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+
+  const handleLogin = async () => {
+    if (!email.trim() || !senha.trim()) {
+      Alert.alert("Atenção", "Preencha e-mail e senha.");
+      return;
+    }
+
+    try {
+      await login(email, senha); // ← chama o login do contexto
+      // O NavigationGuard detecta isAuthenticated = true e redireciona
+      // automaticamente para /(tabs) — NÃO precisa de router.replace aqui!
+    } catch (error) {
+      Alert.alert("Erro", "E-mail ou senha inválidos.");
+    }
+  };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
-        <KeyboardAvoidingView 
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.container}
-        >
-          <View style={styles.content}>
-            
-            <View style={{ marginBottom: Spacing[8] }}>
-              <LogoProEstoque 
-                size="lg" 
-                iconLib="MaterialCommunityIcons" 
-                iconName="card-text" 
-                title="PROESTOQUE" 
-                subtitle='Bem-vindo de volta'
-              />
-            </View>
+    <SafeAreaView style={styles.safe}>
+      <View style={styles.container}>
+        <Text style={styles.titulo}>Bem-vindo de volta 👋</Text>
 
-            <Input 
-              leftIcon="mail-outline" 
-              placeholder="E-mail" 
-              keyboardType="email-address" 
-              autoCapitalize="none"
-            />
-            <Input 
-              leftIcon="lock-closed-outline" 
-              placeholder="Senha" 
-              isPassword 
-            />
+        <Input
+          label="E-mail"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          leftIcon="mail-outline"
+          returnKeyType="next"
+        />
 
-            <TouchableOpacity 
-              onPress={() => router.push('/(auth)/recuperar-senha')} 
-              style={styles.linkEsqueci}
-            >
-              <Text style={styles.linkText}>
-                <Text style={styles.linkTextSecundario}>Esqueci minha senha</Text>
-              </Text>
-            </TouchableOpacity>
+        <Input
+          label="Senha"
+          value={senha}
+          onChangeText={setSenha}
+          isPassword
+          returnKeyType="done"
+          onSubmitEditing={handleLogin}
+        />
 
-            <Button 
-              label="Entrar" 
-              fullWidth
-              onPress={() => router.replace('/(tabs)')} 
-            />
+        <Button
+          label="Entrar"
+          onPress={handleLogin}
+          loading={isLoading}
+          fullWidth
+        />
 
-            <TouchableOpacity 
-              onPress={() => router.push('/(auth)/cadastro')}
-              style={styles.linkCriar}
-            >
-              <Text style={styles.linkText}>
-                <Text style={styles.linkDestaque}>Não tem conta? Cadastrar</Text>
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
+        <Button
+          label="Criar conta"
+          onPress={() => router.push("/(auth)/cadastro")}
+          variant="ghost"
+          fullWidth
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  content: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    padding: Spacing[6],
-  },
-  
-  linkEsqueci: { 
-    alignItems: 'center', // Adicionado para centralizar
-    marginBottom: Spacing[6],
-    marginTop: Spacing[1], // Espaço após o input de senha
-    paddingVertical: Spacing[1] 
-  },
-  linkCriar: { 
-    marginTop: Spacing[6], 
-    alignItems: 'center',
-    padding: Spacing[2], // Área de toque maior
-  },
-  linkText: { 
-    color: Colors.textSecondary, 
-    fontSize: Typography.fontSize.base 
-  },
-  linkTextSecundario: {
-    color: Colors.primary[600],
-    fontWeight: Typography.fontWeight.medium as any,
-  },
-  linkDestaque: { 
-    fontWeight: Typography.fontWeight.bold as any, 
-    color: Colors.primary[600] 
-  },
+  safe:      { flex: 1, backgroundColor: Colors.background },
+  container: { flex: 1, padding: Spacing[6], justifyContent: "center", gap: Spacing[2] },
+  titulo:    { fontSize: 28, fontWeight: "bold", color: Colors.textPrimary, marginBottom: Spacing[4] },
 });

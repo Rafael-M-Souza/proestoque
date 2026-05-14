@@ -1,3 +1,5 @@
+import { useAuth } from "@/src/contexts/AuthContext";
+
 import { useState, useMemo, useCallback } from "react";
 import { View, Text, FlatList, RefreshControl, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -17,6 +19,14 @@ import {
 } from "@/src/data/mockData";
 
 export default function HomeScreen() {
+  // user agora vem do contexto — não precisa de prop!
+  const { user } = useAuth();
+
+  // Monta a saudação com base no horário atual
+  const hora = new Date().getHours();
+  const saudacao = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
+
+  // ... resto do componente ...
   const [refreshing, setRefreshing] = useState(false);
 
   const alertas = useMemo(() => getProdutosComEstoqueBaixo(), []);
@@ -40,20 +50,25 @@ export default function HomeScreen() {
     { id: "valor", titulo: "Em Estoque", valor: formatarPreco(valorTotal), icone: "cash-outline" as const, cor: Colors.success.border },
   ];
 
+  
   const DashboardHeader = () => (
     <View style={styles.headerContainer}>
       <View style={styles.welcomeSection}>
-        <View>
-          <Text style={styles.userName}>Olá, João 👋</Text>
-          <Text style={styles.dateText}>{dataHoje}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing[3] }}>
+
+          <View>
+            <Text style={styles.userName}>{saudacao}, {user?.nome?.split(' ')[0] || "usuário"} 👋</Text>
+            <Text style={styles.dateText}>{dataHoje}</Text>
+          </View>
+
+          {/* AVATAR COM INICIAL */}
+          <View style={styles.avatar}>
+            <Text style={styles.avatarLetra}>
+              {user?.nome?.charAt(0).toUpperCase() ?? "U"}
+            </Text>
+          </View>
         </View>
-        <TouchableOpacity 
-          style={styles.addButton}
-          onPress={() => router.push("/(tabs)/produtos")}
-        >
-          <Ionicons name="add-circle" size={45} color={Colors.primary[600]} />
-        </TouchableOpacity>
-      </View>
+      </View>  
 
       {/* Grid de Cards */}
       <View style={styles.grid}>
@@ -289,5 +304,20 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: Typography.fontSize.xs,
     fontWeight: 'bold',
+  },
+
+  // Avatar do usuário
+  avatar: { 
+    width: 48, 
+    height: 48, 
+    borderRadius: 24, 
+    backgroundColor: Colors.primary[600], 
+    alignItems: "center", 
+    justifyContent: "center" 
+  },
+  avatarLetra: { 
+    color: Colors.white, 
+    fontSize: 20, 
+    fontWeight: "bold" 
   },
 });
